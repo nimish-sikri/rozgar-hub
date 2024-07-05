@@ -1,0 +1,15 @@
+
+   
+/* LoginForm.module.css */
+.backgroundContainer {
+     background-image: url('/_next/static/media/auth.af70819d.jpg'); /* Set the path to your background image */
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center; /* Center the form horizontally */
+    align-items: center; /* Center the form vertically */
+    height: 100vh; /* Full viewport height */
+    padding: 20px; /* Optional: Adjust padding if needed */
+}
+
+

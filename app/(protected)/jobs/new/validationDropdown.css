@@ -1,0 +1,32 @@
+.validation-dropdown {
+  position: absolute;
+  top: calc(100% + 8px); /* Adjust the spacing between input and dropdown */
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.9); /* Adjust opacity as needed */
+  border: 1px solid #ccc; /* Adjust border color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adjust shadow as needed */
+  padding: 8px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.validation-dropdown .message {
+  /* Style the validation message */
+  color: red; /* Adjust text color */
+  font-size: 14px; /* Adjust font size */
+}
+
+.validation-dropdown .options {
+  /* Style the options list */
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+}
+
+.validation-dropdown .options li {
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.validation-dropdown .options li:hover {
+  background-color: #f0f0f0; /* Change background color on hover */
+}

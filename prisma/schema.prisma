@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum UserRole {
+  SEEKER
+  EMPLOYER
+  ADMIN
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+model Job {
+  id               String @id @default(cuid())
+  slug             String   @unique
+  title            String
+  type             String
+  locationType     String
+  location         String?
+  description      String?
+  salary           Int
+  companyName      String
+  applicationEmail String?
+  applicationUrl   String?
+  companyLogoUrl   String?
+  approved         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  applications      JobApplication[]
+
+  userId            String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("jobs")
+}
+
+model JobApplication {
+  id               String @id @default(cuid())
+
+  
+  coverLetter      String?
+  resumeUrl        String?
+
+  status           ApplicationStatus @default(PENDING)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  jobId            String
+  job              Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  userId           String
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, userId])
+}
+
+model User{
+  id                 String @id @default(cuid())
+  name               String?
+  email              String? @unique
+  emailVerified      DateTime?
+  image              String?
+  password           String?
+  role               UserRole?
+  isSocial           Boolean @default(false)
+
+
+  isTwoFactorEnabled Boolean @default(false)
+  isTwoFactorConfirmation TwoFactorConfirmation?
+  isTwoFactorPopupShown Boolean @default(false)
+
+  accounts           Account[]
+  jobs               Job[]
+  applications       JobApplication[]
+
+}
+
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken{
+  id                String @id @default(cuid())
+  email             String
+  token             String @unique
+  expires           DateTime
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken{
+  id                String @id @default(cuid())
+  email             String
+  token             String @unique
+  expires           DateTime
+
+  @@unique([email, token])
+}
+
+
+model TwoFactorToken{
+  id                String @id @default(cuid())
+  email             String
+  token             String @unique
+  expires           DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation{
+  id                String @id @default(cuid())
+  
+  userId            String
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
