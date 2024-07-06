@@ -9,6 +9,7 @@ import { Analytics } from '@vercel/analytics/react';
 import 'tailwindcss/tailwind.css'
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { getCurrentUser } from "@/lib/auth";
+import { JobsProvider } from "@/providers/jobs-provider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -51,7 +52,11 @@ export default async function RootLayout({
         <Script id="hydro_script" src="https://track.hydro.online/"></Script>
       </head>
        <body className={`${inter.className} min-w-[350px]`}>
-        {children}
+        
+        
+          {children}
+        
+        
         </body>
     </html>
   );

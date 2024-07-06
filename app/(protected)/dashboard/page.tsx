@@ -11,7 +11,7 @@ const DashboardPage = async () => {
     //@ts-ignore
     if(currentUser?.role !== "ADMIN") {
         return (
-            <div className="px-10 py-6">
+            <div className="px-10 py-6 align-middle">
                 You are not allowed to access this page
             </div>
         )

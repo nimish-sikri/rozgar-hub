@@ -95,7 +95,7 @@ const JobApprove = ({
         >
             {job.approved ? (
                 <Button
-                    className="bg-red-500 hover:bg-red-500/80"
+                    className="bg-red-500 hover:bg-black text-white"
                     onClick={handleApprovalToggle}
                     disabled={loading}
                 >
@@ -103,7 +103,7 @@ const JobApprove = ({
                 </Button>
             ) : (
                 <Button
-                    className="bg-green-500 hover:bg-green-500/80"
+                    className="bg-green-500 hover:bg-black text-white"
                     onClick={handleApprovalToggle}
                     disabled={loading}
                 >

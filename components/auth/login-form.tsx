@@ -92,7 +92,7 @@ export const LoginForm = () => {
                                 name="code"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Two factor code code</FormLabel>
+                                        <FormLabel></FormLabel>
                                         <FormControl>
                                             <div className="flex items-center justify-center">
                                                 <InputOTP 
@@ -153,7 +153,7 @@ export const LoginForm = () => {
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
                                                 <Input 
-                                                className=" focus:ring-black"
+                                                className=" focus:outline-none focus:ring-black"
                                                     disabled={isPending}
                                                     {...field}
                                                     placeholder="********"
@@ -181,7 +181,7 @@ export const LoginForm = () => {
                     <FormSuccess message={success}/>
                     <Button
                         disabled={isPending} 
-                        className="w-full bg-green-500 text-white font-bold hover:bg-black"
+                        className="w-full bg-green-500 text-white font-bold hover:bg-black "
                         type="submit"
                     >
                         {showTwoFactor ? "Confirm" : "Login"}
