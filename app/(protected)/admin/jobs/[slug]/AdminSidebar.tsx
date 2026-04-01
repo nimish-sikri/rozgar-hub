@@ -33,7 +33,7 @@ export default function AdminSidebar({ job }: AdminSidebarProps) {
   
 
 interface AdminButtonProps {
-    jobId: number;
+    jobId: string;
   }
 
 //   ApproveSubmissionButton: Renders a form to approve a job.

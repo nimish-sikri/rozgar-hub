@@ -18,7 +18,7 @@ export async function approveSubmission(
     formData: FormData, //The data submitted from the form.
   ): Promise<FormState> {
     try {
-      const jobId = parseInt(formData.get("jobId") as string); //Extracts the job ID from the form data and parses it as an integer.
+      const jobId = formData.get("jobId") as string; //Extracts the job ID from the form data and parses it as an integer.
         
       //Retrieves the current user.
       const user = await currentUser();
@@ -52,7 +52,7 @@ export async function deleteJob(
     formData: FormData,
   ): Promise<FormState> {
     try {
-      const jobId = parseInt(formData.get("jobId") as string);
+      const jobId = formData.get("jobId") as string;
   
       const user = await currentUser();
   
