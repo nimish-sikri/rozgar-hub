@@ -1,179 +1,112 @@
-"use client"
+"use client";
 
-import { Job } from "@prisma/client"
-import { ColumnDef } from "@tanstack/react-table"
-import { useRouter } from "next/navigation"
-import { Button } from "../ui/button"
-import axios from "axios"
-import { useState } from "react"
+import { Job } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import axios from "axios";
+import { useState } from "react";
+import { CheckCircle2, Clock, Loader2 } from "lucide-react";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
+const JobTitle = ({ job }: { job: Job }) => {
+  const router = useRouter();
 
-interface Props{
-    job: Job;
-}
+  return (
+    <div
+      className="flex items-center gap-2 cursor-pointer"
+      onClick={() => router.push(`/jobs/${job.slug}`)}
+    >
+      <p className="text-sm font-medium text-gray-900 hover:underline">
+        {job.title}
+      </p>
+    </div>
+  );
+};
 
-const JobTitle = ({
-    job,
-} : Props) => {
+const JobApprove = ({ job }: { job: Job }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-    const router = useRouter();
+  const handleApprovalToggle = async () => {
+    setLoading(true);
+    axios
+      .post(`/api/jobs/approval/${job.id}`, {
+        approved: !job.approved,
+      })
+      .then(() => {
+        router.refresh();
+      })
+      .catch((error) => {
+        console.error("Approval Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
-    return (
-        <div 
-            className="w-full h-full flex items-center gap-2"
-            onClick={() => router.push(`/jobs/${job.slug}`)}
+  return (
+    <div className="flex items-center">
+      {job.approved ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1.5 rounded-full border-gray-200 text-xs font-medium text-gray-600 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
+          onClick={handleApprovalToggle}
+          disabled={loading}
         >
-            
-            <p className="cursor-pointer hover:underline">{job.title}</p>
-        </div>
-    )
-}
-
-const CompanyName = ({
-    job,
-} : Props) => {
-    return (
-        <div 
-            className="w-full h-full flex items-center gap-2"
+          {loading ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            <CheckCircle2 size={12} />
+          )}
+          Approved
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          className="h-7 gap-1.5 rounded-full bg-gray-900 text-xs font-medium text-white hover:bg-gray-700"
+          onClick={handleApprovalToggle}
+          disabled={loading}
         >
-            {job.companyName}
-        </div>
-    )
-}
+          {loading ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            <Clock size={12} />
+          )}
+          Approve
+        </Button>
+      )}
+    </div>
+  );
+};
 
-const JobLocation = ({
-    job,
-} : Props) => {
-    return (
-        <div 
-            className="w-full h-full flex items-center gap-2"
-        >
-            {job.location}
-        </div>
-    )
-}
-
-
-const JobApprove = ({
-    job,
-} : Props) => {
-
-    const router = useRouter();
-    const [loading, setLoading] = useState(false)
-
-    const handleApprovalToggle = async () => {
-        setLoading(true);
-
-        axios.post(`/api/jobs/approval/${job.id}`, {
-            approved: !job.approved,
-        })
-            .then(() => {
-                console.error('Success');
-            })
-            .catch((error) => {
-                console.error('Approval Error:', error);
-            })
-            .finally(() => {
-                setLoading(false);
-                router.refresh();
-            });
-    };
-
-    
-
-    return (
-        <div 
-            className="w-full h-full flex items-center gap-2"
-        >
-            {job.approved ? (
-                <Button
-                    className="bg-red-500 hover:bg-black text-white"
-                    onClick={handleApprovalToggle}
-                    disabled={loading}
-                >
-                    Un-approve
-                </Button>
-            ) : (
-                <Button
-                    className="bg-green-500 hover:bg-black text-white"
-                    onClick={handleApprovalToggle}
-                    disabled={loading}
-                >
-                    Approve
-                </Button>
-            )}
-        </div>
-    )
-}
-
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Job>[] = [
   {
     accessorKey: "title",
     header: "Title",
-    cell: ({ row }) => {
-        const job = row.original
-
-        return (
-            <JobTitle 
-                //@ts-ignore
-                job={job}
-            />
-        );
-    }
+    cell: ({ row }) => <JobTitle job={row.original} />,
   },
   {
     accessorKey: "companyName",
     header: "Company",
-    cell: ({ row }) => {
-        const job = row.original;
-
-        return (
-            <span className="">
-                <CompanyName
-                    //@ts-ignore
-                    job={job}
-                />
-            </span>
-        );
-    }
+    cell: ({ row }) => (
+      <span className="text-sm text-gray-600">
+        {row.original.companyName}
+      </span>
+    ),
   },
   {
     accessorKey: "location",
     header: "Location",
-    cell: ({ row }) => {
-        const job = row.original
-
-        return (
-            <span className="">
-                <JobLocation 
-                    //@ts-ignore
-                    job={job}
-                />
-            </span>
-        );
-    }
+    cell: ({ row }) => (
+      <span className="text-sm text-gray-500">
+        {row.original.location || "Remote"}
+      </span>
+    ),
   },
   {
     accessorKey: "approved",
     header: "Status",
-    cell: ({ row }) => {
-        const job = row.original
-
-        return (
-            <JobApprove
-                //@ts-ignore 
-                job={job}
-            />
-        );
-    }
+    cell: ({ row }) => <JobApprove job={row.original} />,
   },
-]
+];

@@ -1,54 +1,58 @@
-"use client";
-
 import { Job } from "@prisma/client";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import JobListItem from "./JobListItem";
-import { useJobsContext } from "@/providers/jobs-provider";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import BookmarkButton from "./BookmarkButton";
+import EmptyState from "./EmptyState";
 import { cn } from "@/lib/utils";
 
 interface JobResultsProps {
-  jobsArr: Job[];
-  page: number;
+  jobs: Job[];
+  currentPage: number;
+  totalPages: number;
+  searchParams: Record<string, string | undefined>;
+  savedJobIds?: string[];
 }
 
 export default function JobResults({
-  jobsArr,
-  page,
+  jobs,
+  currentPage,
+  totalPages,
+  searchParams,
+  savedJobIds = [],
 }: JobResultsProps) {
-  const jobsPerPage = 6;
-  const skip = (page - 1) * jobsPerPage;
-
-  const { jobs, isLoading } = useJobsContext();
-
-//   if (isLoading) {
-//     return (
-//       <div className="grow space-y-4 w-full flex justify-center">
-//         Loading.....
-//       </div>
-//     );
-//   }
-
-  const currentJobs = jobs.length > 0 ? jobs : jobsArr;
-
   return (
     <div className="grow space-y-4">
-      {currentJobs.slice(skip, skip + jobsPerPage).map((job) => (
-        <Link key={job.id} href={`/jobs/${job.slug}`} className="block">
-          <JobListItem job={job} />
-        </Link>
+      {jobs.map((job, i) => (
+        <div
+          key={job.id}
+          className={`relative animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
+        >
+          <Link href={`/jobs/${job.slug}`} className="block">
+            <JobListItem job={job} />
+          </Link>
+          {savedJobIds !== undefined && (
+            <div className="absolute right-3 top-3 z-10">
+              <BookmarkButton
+                jobId={job.id}
+                initialSaved={savedJobIds.includes(job.id)}
+              />
+            </div>
+          )}
+        </div>
       ))}
-      {currentJobs.length === 0 && (
-        <p className="m-auto text-center text-lg font-bold">
-          No jobs found. Try adjusting your search filters.
-        </p>
+      {jobs.length === 0 && (
+        <EmptyState
+          icon="search"
+          title="No jobs found"
+          description="Try adjusting your search filters or browse all available positions."
+        />
       )}
-      {currentJobs.length > 0 && (
+      {totalPages > 1 && (
         <Pagination
-          currentPage={page}
-          totalPages={Math.ceil(currentJobs.length / jobsPerPage)}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          searchParams={searchParams}
         />
       )}
     </div>
@@ -58,39 +62,47 @@ export default function JobResults({
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  searchParams: Record<string, string | undefined>;
 }
 
-function Pagination({
-  currentPage,
-  totalPages,
-}: PaginationProps) {
+function Pagination({ currentPage, totalPages, searchParams }: PaginationProps) {
+  function buildPageUrl(page: number) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (value && key !== "page") {
+        params.set(key, value);
+      }
+    }
+    params.set("page", String(page));
+    return `/home?${params.toString()}`;
+  }
 
   return (
-    <div className="flex justify-between">
-      {currentPage > 1 && (
+    <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+      {currentPage > 1 ? (
         <Link
-          href={`/?page=${currentPage - 1}`}
-          className={cn(
-            "flex items-center gap-2 font-semibold"
-          )}
+          href={buildPageUrl(currentPage - 1)}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100"
         >
           <ArrowLeft size={16} />
-          Previous page
+          Previous
         </Link>
+      ) : (
+        <div />
       )}
-      <span className="font-semibold">
+      <span className="text-sm font-medium text-gray-500">
         Page {currentPage} of {totalPages}
       </span>
-      {currentPage < totalPages && (
+      {currentPage < totalPages ? (
         <Link
-          href={`/?page=${currentPage + 1}`}
-          className={cn(
-            "flex items-center gap-2 font-semibold"
-          )}
+          href={buildPageUrl(currentPage + 1)}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100"
         >
-          Next page
+          Next
           <ArrowRight size={16} />
         </Link>
+      ) : (
+        <div />
       )}
     </div>
   );

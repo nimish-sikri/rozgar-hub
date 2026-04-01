@@ -45,7 +45,7 @@ interface LocationInputProps extends React.InputHTMLAttributes<HTMLInputElement>
           />
           {/* Render dropdown if search input is not empty and input is focused */}
           {locationSearchInput.trim() && hasFocus && (
-            <div className="absolute z-20 w-full divide-y rounded-b-lg border-x border-b bg-background shadow-xl">
+            <div className="absolute z-50 w-full divide-y rounded-b-lg border-x border-b bg-background shadow-xl">
               {!cities.length && <p className="p-3">No results found.</p>}
               {/* Map through the filtered cities array and render each city as a button in the dropdown menu. */}
               {cities.map((city) => (

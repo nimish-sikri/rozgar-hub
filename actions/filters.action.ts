@@ -4,31 +4,15 @@ import prisma from "@/lib/prisma";
 import { JobFilterValues } from "@/lib/validation";
 import { Prisma } from "@prisma/client";
 
-const salaryRangesInNumbers = [
-    20000,
-    50000,
-    80000,
-    100000,
-    150000,
-    200000,
-    250000,
-];
+const JOBS_PER_PAGE = 6;
 
-const getSalaryNumber = (salaryString: string): number | undefined => {
-    const matched = salaryString.match(/\d+/);
-    if (matched) {
-        return parseInt(matched[0]);
-    }
-    return undefined;
-};
-
-export const getJobs = async (filterValues: JobFilterValues) => {
+export const getJobs = async (filterValues: JobFilterValues, page: number = 1) => {
     const { title, type, salary, location, remote } = filterValues;
-    const jobsPerPage = 6;
+    const skip = (page - 1) * JOBS_PER_PAGE;
 
     const searchString = title
         ?.split(" ")
-        .filter((word : string) => word.length > 0)
+        .filter((word: string) => word.length > 0)
         .join(" & ");
 
     const searchFilter: Prisma.JobWhereInput = searchString
@@ -45,18 +29,9 @@ export const getJobs = async (filterValues: JobFilterValues) => {
 
     const salaryFilter: Prisma.JobWhereInput = salary
         ? (() => {
-            const selectedSalaryIndex = salaryRangesInNumbers.findIndex((range) => {
-                const selectedSalaryNumber = getSalaryNumber(salary);
-                return selectedSalaryNumber !== undefined && selectedSalaryNumber < range;
-            });
-            const minSalary = salaryRangesInNumbers[selectedSalaryIndex - 1];
-            const maxSalary = salaryRangesInNumbers[selectedSalaryIndex];
-            return {
-                AND: [
-                    { salary: { gte: minSalary } },
-                    { salary: { lt: maxSalary } },
-                ],
-            };
+            const salaryNum = parseInt(salary);
+            if (isNaN(salaryNum)) return {};
+            return { salary: { lte: salaryNum } };
         })()
         : {};
 
@@ -75,84 +50,25 @@ export const getJobs = async (filterValues: JobFilterValues) => {
         ],
     };
 
-    const jobs = await prisma.job.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        take: jobsPerPage,
-    });
+    const [jobs, totalResults] = await Promise.all([
+        prisma.job.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: JOBS_PER_PAGE,
+        }),
+        prisma.job.count({ where }),
+    ]);
 
-    const totalResults = await prisma.job.count({ where });
-
-    return jobs;
+    return {
+        jobs,
+        totalPages: Math.ceil(totalResults / JOBS_PER_PAGE),
+    };
 };
 
-export const getJobsWithFilters = async (filters: any) => {
-    const { location, salary, jobType } = filters;
-
-    if (!location && !salary && !jobType) {
-        return {
-            error: "Please select a filter"
-        };
-    }
-
-    if (!jobType) {
-        const jobs = await prisma.job.findMany({
-            where: {
-                salary: {
-                    lt: salary
-                },
-                location: {
-                    startsWith: location
-                }
-            }
-        });
-
-        return jobs;
-    }
-
-    if (!location) {
-        const jobs = await prisma.job.findMany({
-            where: {
-                salary: {
-                    lt: salary
-                },
-                type: jobType
-            }
-        });
-
-        return jobs;
-    }
-
-    if (!location && !jobType) {
-        const jobs = await prisma.job.findMany({
-            where: {
-                salary: {
-                    lt: salary
-                }
-            }
-        });
-
-        return jobs;
-    }
-
-    const jobs = await prisma.job.findMany({
-        where: {
-            salary: {
-                lt: salary
-            },
-            type: jobType,
-            location: {
-                startsWith: location
-            }
-        }
-    });
-
-    return jobs;
-};
-
-// New function to get all jobs and return their distinct locations in a set
 export const getAllJobLocations = async () => {
     const jobs = await prisma.job.findMany({
+        where: { approved: true },
         select: { location: true },
     });
 

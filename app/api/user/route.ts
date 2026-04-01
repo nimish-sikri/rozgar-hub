@@ -1,39 +1,36 @@
 import { getCurrentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { TaskSchema } from "@/schemas";
-import * as z from "zod";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-
         const user = await getCurrentUser();
-
-        if(!user){
-            return new Response('User not found', { status: 404 });
+        if (!user) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         const body = await request.json();
+        const { twoFactorStatus, name } = body;
 
-        const { twoFactorStatus } = body;
+        const data: Record<string, any> = {};
+        if (typeof twoFactorStatus === "boolean") {
+            data.isTwoFactorEnabled = twoFactorStatus;
+        }
+        if (typeof name === "string" && name.trim()) {
+            data.name = name.trim();
+        }
 
-        console.log(twoFactorStatus);
+        if (Object.keys(data).length === 0) {
+            return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+        }
 
         const updatedUser = await prisma.user.update({
-            where: {
-                id: user.id,
-            },
-            data: {
-                isTwoFactorEnabled: twoFactorStatus
-            }
-        })
+            where: { id: user.id },
+            data,
+        });
 
-        return new Response(JSON.stringify(updatedUser), { status: 200, headers: { 'Content-Type': 'application/json' } });
-
+        return NextResponse.json(updatedUser);
     } catch (error) {
-        if (error instanceof Error) {
-            return new Response(error.message, { status: 500 });
-        } else {
-            return new Response('An unknown error occurred', { status: 500 });
-        }
+        return NextResponse.json({ error: "An error occurred" }, { status: 500 });
     }
 }

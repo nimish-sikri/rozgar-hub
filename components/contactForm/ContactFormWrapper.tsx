@@ -6,6 +6,7 @@ const ContactForm = () => {
   const [values, setValues] = useState<IValues>({
     name: '',
     email: '',
+    subject: '',
     message: '',
   });
 

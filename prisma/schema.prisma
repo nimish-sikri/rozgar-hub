@@ -47,6 +47,7 @@ model Job {
   updatedAt        DateTime @updatedAt
 
   applications      JobApplication[]
+  savedBy           SavedJob[]
 
   userId            String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -92,6 +93,8 @@ model User{
   accounts           Account[]
   jobs               Job[]
   applications       JobApplication[]
+  resume             Resume?
+  savedJobs          SavedJob[]
 
 }
 
@@ -141,6 +144,33 @@ model TwoFactorToken{
   expires           DateTime
 
   @@unique([email, token])
+}
+
+model Resume {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileUrl             String
+  fileName            String
+  rawText             String?  @db.Text
+  skills              String[]
+  yearsOfExperience   Float?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("resumes")
+}
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobId])
+  @@map("saved_jobs")
 }
 
 model TwoFactorConfirmation{

@@ -1,111 +1,140 @@
-"use client"
+"use client";
 
+import { Modal } from "@/components/modals/modal";
+import { useCallback, useState } from "react";
+import { useModal } from "@/hooks/use-modal-store";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { User } from "@prisma/client";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Mail, Shield, UserRound, Briefcase, FileText } from "lucide-react";
 
-import { 
-    Form, 
-    FormControl, 
-    FormDescription, 
-    FormField, 
-    FormItem, 
-    FormLabel, 
-    FormMessage 
-} from "@/components/ui/form"
-import { Modal } from "@/components/modals/modal"
-import { 
-    FieldValues, 
-    SubmitHandler, 
-    useForm 
-} from "react-hook-form"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { useModal } from "@/hooks/use-modal-store"
-import { useRouter } from "next/navigation"
-import * as z from 'zod';
-import axios from "axios"
-import toast from "react-hot-toast"
-import { User } from "@prisma/client"
-import { Switch } from "@/components/ui/switch"
-
-interface ProfileModalProps{
-    currentUser: User;
+interface ProfileModalProps {
+  currentUser: User;
 }
 
-export const ProfileModal = ({
-    currentUser,
-} : ProfileModalProps) => {
+export const ProfileModal = ({ currentUser }: ProfileModalProps) => {
+  const router = useRouter();
+  const { isOpen, onClose, type } = useModal();
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(currentUser?.name || "");
+  const [enableTwoFactor, setEnableTwoFactor] = useState(
+    currentUser?.isTwoFactorEnabled
+  );
 
-    const router = useRouter();
-    const form = useForm();
+  const isModalOpen = isOpen && type === "profileModal";
 
-  
-    const { isOpen, onClose, type } = useModal();
-    const [priority, setPriority] = useState('Priority');
-    const [dueDate, setDueDate] = useState<Date>();
-    const [loading, setLoading] = useState(false);
-    const [validInput, setValidInput] = useState(false);
-    const [enableTwoFactor, setEnableTwoFactor] = useState(currentUser?.isTwoFactorEnabled);
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
-    const isModalOpen = isOpen && type === "profileModal"
+  const onSubmit = async () => {
+    setLoading(true);
+    axios
+      .post("/api/user", {
+        twoFactorStatus: enableTwoFactor,
+        name: name.trim(),
+      })
+      .then(() => {
+        toast.success("Profile updated");
+      })
+      .catch(() => {
+        toast.error("Something went wrong");
+      })
+      .finally(() => {
+        handleClose();
+        router.refresh();
+        setLoading(false);
+      });
+  };
 
-    const handleTwoFactorToggle = () => {
-        if(enableTwoFactor){
-            setEnableTwoFactor(false);
-        } else {
-            setEnableTwoFactor(true);
-        }
-    }
+  const roleLabel =
+    currentUser?.role === "SEEKER"
+      ? "Job Seeker"
+      : currentUser?.role === "EMPLOYER"
+        ? "Employer"
+        : currentUser?.role === "ADMIN"
+          ? "Admin"
+          : "Not set";
 
-    const handleClose = useCallback(() => {
-        onClose();
-    }, []);
+  let bodyContent = (
+    <div className="flex flex-col gap-5 mt-4">
+      {/* Name */}
+      <div className="space-y-1">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <UserRound size={16} />
+          Name
+        </label>
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your name"
+          className="border-gray-300"
+        />
+      </div>
 
+      {/* Email (read-only) */}
+      <div className="space-y-1">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <Mail size={16} />
+          Email
+        </label>
+        <Input
+          value={currentUser?.email || ""}
+          disabled
+          className="border-gray-300 bg-gray-50 text-gray-500"
+        />
+      </div>
 
-
-    const onSubmit = async (data: any) => {
-        const updatedValues = { twoFactorStatus : enableTwoFactor };
-        setLoading(true);
-        console.log(updatedValues);
-        axios.post('/api/user', updatedValues)
-            .then(() => {
-                toast.success("Changes saved")
-            }) .catch (() => {
-                toast.error("Something went wrong")
-            }) .finally(() => {
-                handleClose();
-                router.refresh();
-                setLoading(false)
-            })
-    }
-
-
-
-    let bodyContent = (
-        <div key="flex flex-col items-center gap-2">
-            <div className="w-full flex items-center justify-between mt-6">
-                <h1 className="text-md">Two factor authentication</h1>
-                <Switch
-                    checked={enableTwoFactor}
-                    onCheckedChange={handleTwoFactorToggle}
-                />
-            </div>
+      {/* Role (read-only) */}
+      <div className="space-y-1">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <Briefcase size={16} />
+          Role
+        </label>
+        <div className="rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+          {roleLabel}
         </div>
-    )
+      </div>
 
-
-
-    return (
-        <div>
-            <Modal
-                title="Your profile"
-                description={"Make sure to save after making changes"}
-                onClose={handleClose}
-                onSubmit={form.handleSubmit(onSubmit)}
-                actionLabel={"Save"}
-                secondaryAction={handleClose}
-                secondaryActionLabel={"Cancel"}
-                isOpen={isModalOpen}
-                body={bodyContent}
-                disabled={loading}
-            />
+      {/* Resume status (seekers only) */}
+      {currentUser?.role === "SEEKER" && (
+        <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-3 text-sm">
+          <FileText size={16} className="text-gray-500" />
+          <span className="text-gray-600">
+            Resume: Upload or update from the &quot;Upload Resume&quot; button in the navbar
+          </span>
         </div>
-    )
-}
+      )}
+
+      {/* Two-factor toggle */}
+      <div className="flex items-center justify-between rounded-lg border p-3">
+        <div className="flex items-center gap-2">
+          <Shield size={16} className="text-gray-700" />
+          <span className="text-sm font-medium">Two-factor authentication</span>
+        </div>
+        <Switch
+          checked={enableTwoFactor}
+          onCheckedChange={setEnableTwoFactor}
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <Modal
+      title="Your Profile"
+      description="View and update your account settings"
+      onClose={handleClose}
+      onSubmit={onSubmit}
+      actionLabel="Save Changes"
+      secondaryAction={handleClose}
+      secondaryActionLabel="Cancel"
+      isOpen={isModalOpen}
+      body={bodyContent}
+      disabled={loading}
+    />
+  );
+};

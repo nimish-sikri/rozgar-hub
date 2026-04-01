@@ -68,7 +68,7 @@ export default function NewJobForm() {
           Get your job posting seen by thousands of job seekers.
         </p>
       </div>
-      <div className="space-y-6 rounded-lg border p-4">
+      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div >
           <h2 className="font-semibold flex justify-center ">Job Details</h2>
           <p className=" text-gray-900 flex justify-center ">

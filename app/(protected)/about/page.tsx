@@ -1,66 +1,152 @@
-import React from "react";
 import H1 from "@/components/ui/h1";
-import "./about.css";
+import { Metadata } from "next";
+import { Target, Users, Sparkles, Search, FileText, Zap } from "lucide-react";
 
-const About = () => {
-  return (
-    <div className="container">
-      <H1 className="center">About Rozgar Hub</H1>
-      <br />
-      <p>
-        <strong>Welcome to Rozgar Hub</strong>, your premier destination for navigating the dynamic landscape of employment opportunities. Rozgar Hub stands as a beacon of hope and opportunity for job seekers, offering a comprehensive platform designed to streamline the job search process and empower individuals to take control of their careers.
-      </p>
-      <br />
-      <p>
-        <strong>Our Vision</strong>
-      </p>
-      <p>
-        At Rozgar Hub, we envision a world where every individual has access to meaningful employment opportunities that align with their skills, passions, and aspirations. Our vision is rooted in the belief that a fulfilling career is not just a means of livelihood but a pathway to personal growth, professional success, and overall well-being.
-      </p>
-      <br />
-      <p>
-        <strong>Empowering Job Seekers</strong>
-      </p>
-      <p>
-        As advocates for job seekers, we understand the challenges and complexities associated with finding the right job. That's why Rozgar Hub is committed to empowering job seekers at every stage of their career journey. Whether you're a seasoned professional looking to advance your career or a fresh graduate eager to embark on your professional path, Rozgar Hub provides the tools, resources, and support you need to succeed.
-      </p>
-      <br />
-      <p>
-        <strong>Comprehensive Job Database</strong>
-      </p>
-      <p>
-        Rozgar Hub boasts an extensive database of job listings across a diverse range of industries, sectors, and roles. From entry-level positions to executive roles, our platform caters to individuals of all backgrounds and experience levels. With thousands of job opportunities available at your fingertips, Rozgar Hub ensures that you have access to the latest and most relevant job openings in your desired field.
-      </p>
-      <br />
-      <p>
-        <strong>Personalized Job Matching</strong>
-      </p>
-      <p>
-        Finding the perfect job can feel like searching for a needle in a haystack. That's why Rozgar Hub leverages advanced algorithms and machine learning techniques to deliver personalized job recommendations tailored to your unique profile and preferences. By analyzing your skills, experience, and career goals, we match you with opportunities that are best suited to your needs, increasing your chances of landing your dream job.
-      </p>
-      <br />
-      <p>
-        <strong>Seamless Application Process</strong>
-      </p>
-      <p>
-        Gone are the days of tedious job applications and endless paperwork. Rozgar Hub simplifies the application process, allowing you to apply to jobs with just a few clicks. With our intuitive interface and user-friendly features, you can submit applications quickly and efficiently, saving you time and effort.
-      </p>
-      <br />
-      <p>
-        <strong>Career Development Resources</strong>
-      </p>
-      <p>
-        In addition to job listings, Rozgar Hub offers a wealth of resources to support your career development journey. From resume writing tips to interview preparation guides, our comprehensive library of resources equips you with the knowledge and skills needed to excel in your job search and beyond. Whether you're polishing your resume or honing your networking skills, Rozgar Hub is your trusted partner every step of the way.
-      </p>
-      <br />
-      <p>
-        <strong>Join the Rozgar Hub Community</strong>
-      </p>
-      <p>
-        Join thousands of satisfied job seekers who have found success and fulfillment through Rozgar Hub. Sign up today to unlock a world of opportunities and take the first step towards a brighter future. At Rozgar Hub, your dream job awaits!
-      </p>
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "About Us",
 };
 
-export default About;
+const features = [
+  {
+    icon: Search,
+    title: "Smart Job Search",
+    description:
+      "Powerful filters and full-text search to help you find the perfect role by title, location, type, and salary range.",
+  },
+  {
+    icon: Sparkles,
+    title: "AI-Powered Matching",
+    description:
+      "Upload your resume and our system automatically extracts your skills and experience to recommend the best-fit jobs.",
+  },
+  {
+    icon: FileText,
+    title: "One-Click Apply",
+    description:
+      "Apply to jobs directly on the platform with your resume automatically attached. Track every application in one place.",
+  },
+  {
+    icon: Users,
+    title: "Employer Dashboard",
+    description:
+      "Employers can post jobs, manage listings, review applicants, and update application statuses — all from one dashboard.",
+  },
+  {
+    icon: Zap,
+    title: "Instant Notifications",
+    description:
+      "Get email notifications when employers update your application status. Employers get notified when someone applies.",
+  },
+  {
+    icon: Target,
+    title: "Career Tools",
+    description:
+      "Save jobs for later, get personalized recommendations, and track your entire job search journey in one place.",
+  },
+];
+
+export default function AboutPage() {
+  return (
+    <main className="m-auto my-10 max-w-5xl space-y-12 px-4 min-h-full">
+      {/* Header */}
+      <div className="space-y-3 text-center">
+        <H1>About Rozgar Hub</H1>
+        <p className="mx-auto max-w-2xl text-gray-500">
+          Your premier destination for navigating the dynamic landscape of
+          employment opportunities.
+        </p>
+      </div>
+
+      {/* Mission card */}
+      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+        <div className="grid gap-8 md:grid-cols-2">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              Our Mission
+            </h2>
+            <p className="text-sm leading-relaxed text-gray-600">
+              At Rozgar Hub, we envision a world where every individual has
+              access to meaningful employment opportunities that align with their
+              skills, passions, and aspirations. We believe that a fulfilling
+              career is not just a means of livelihood but a pathway to personal
+              growth, professional success, and overall well-being.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              Who We Serve
+            </h2>
+            <p className="text-sm leading-relaxed text-gray-600">
+              Whether you&apos;re a seasoned professional looking to advance your
+              career, a fresh graduate eager to embark on your professional path,
+              or an employer searching for top talent — Rozgar Hub provides the
+              tools, resources, and support you need to succeed.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Features grid */}
+      <div>
+        <h2 className="mb-6 text-center text-xl font-bold text-gray-900">
+          What We Offer
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => (
+            <div
+              key={feature.title}
+              className="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[2px]"
+            >
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 transition-colors group-hover:bg-gray-200">
+                <feature.icon size={20} className="text-gray-600" />
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-gray-900">
+                {feature.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-gray-500">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+        <h2 className="mb-6 text-center text-xl font-bold text-gray-900">
+          Rozgar Hub in Numbers
+        </h2>
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+          {[
+            { value: "1000+", label: "Job Seekers" },
+            { value: "500+", label: "Companies" },
+            { value: "5000+", label: "Job Listings" },
+            { value: "50+", label: "Cities" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="mt-1 text-xs text-gray-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="rounded-xl border border-gray-200 bg-gray-900 p-8 text-center shadow-sm">
+        <h2 className="text-xl font-bold text-white">
+          Ready to find your dream job?
+        </h2>
+        <p className="mt-2 text-sm text-gray-400">
+          Join thousands of satisfied job seekers who have found success through
+          Rozgar Hub.
+        </p>
+        <a
+          href="/home"
+          className="mt-4 inline-block rounded-lg bg-white px-6 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100"
+        >
+          Browse Jobs
+        </a>
+      </div>
+    </main>
+  );
+}

@@ -1,69 +1,5 @@
-// "use client"
-
-// import logo from "@/assets/logo.png";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { Button } from "./ui/button";
-// import { User } from "@prisma/client";
-// import { UserMenu } from "./user-menu";
-// import { useModal } from "@/hooks/use-modal-store";
-// import { useRouter } from "next/navigation";
-
-// interface NavbarProps{
-//   currentUser: User;
-// }
-// export default function Navbar({
-//   currentUser,
-// } : NavbarProps) {
-
-//   const router = useRouter()
-
-//   return (
-//     <header className="shadow-md">
-//       <nav className="m-auto flex max-w-5xl items-center justify-between px-3 py-5">
-//         <Link href="/" className="flex items-center gap-3">
-//           <Image src={logo} width={40} height={40} alt="Flow Jobs logo" />
-//           <span className="text-xl font-bold tracking-tight">Rozgar Hub</span>
-//         </Link>
-//         <div className="flex gap-2">
-//           {!currentUser && (
-//               <>
-//                 <Button asChild className="bg-black hover:bg-gray-800" variant={'ghost'}>
-//                   <Link href="/jobs/new" className="font-bold text-white">
-//                     Login
-//                   </Link>
-//                 </Button>
-//               </>
-//           )}
-//           {(currentUser && currentUser.role === "EMPLOYER") && (
-//               <>
-//                 <Button asChild className="bg-black hover:bg-gray-800">
-//                   <Link href="/jobs/new" className="font-bold text-white">
-//                     Post a job
-//                   </Link>
-//                 </Button>
-//               </>
-//             )}
-
-//             {(currentUser && currentUser.role === "SEEKER") && (
-//               <>
-//                 <Button asChild className="bg-green-600 hover:bg-black">
-//                   <Link href="https://drive.google.com/file/d/1hUUtFQMf9f5JRlzVq6b8Vc_UnkQ9o7X0/view?usp=sharing" target="_blank" className="font-bold text-white">
-//                     Hire Me
-//                   </Link>
-//                 </Button>
-//               </>
-//             )}
-//           <UserMenu currentUser={currentUser}/>
-//         </div>
-//       </nav>
-//     </header>
-//   );
-// }
-
-
-// components/Navbar.tsx
 "use client";
+
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
@@ -73,140 +9,198 @@ import { User } from "@prisma/client";
 import { UserMenu } from "./user-menu";
 import ResumeUploadModal from "@/components/modals/seekerResumeModal";
 import { useRouter } from "next/navigation";
-import ImageUpload from "@/components/image-upload"; // Import the ImageUpload component
+import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
   currentUser: User;
 }
 
-export default function Navbar({
-  currentUser,
-} : NavbarProps) {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isUploadModalOpen, setUploadModalOpen] = useState(false);
-
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
-
-  const handleOpenUploadModal = () => setUploadModalOpen(true);
-  const handleCloseUploadModal = () => setUploadModalOpen(false);
-
+export default function Navbar({ currentUser }: NavbarProps) {
+  const [isResumeModalOpen, setResumeModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   return (
-    <header className="shadow-md">
-      <nav className="m-auto flex max-w-5xl items-center justify-between px-3 py-5">
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
+      {/* Top accent line */}
+      <div className="h-0.5 bg-gray-900" />
+
+      <nav className="m-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-3">
-          <Image src={logo} width={40} height={40} alt="Flow Jobs logo" />
-          <span className="text-xl font-bold tracking-tight">Rozgar Hub</span>
+          <Image src={logo} width={36} height={36} alt="Rozgar Hub logo" />
+          <span className="text-xl font-bold tracking-tight text-gray-900">
+            Rozgar Hub
+          </span>
         </Link>
-        <div className="flex gap-2">
-          {!currentUser && (
-            <>
-              <Button asChild className="bg-black hover:bg-gray-800" variant="ghost">
-                <Link href="/jobs/new" className="font-bold text-white">
-                  Login
-                </Link>
-              </Button>
-            </>
-          )}
-          {(currentUser && currentUser.role === "EMPLOYER") && (
-            <>
-              <Button asChild className="bg-black hover:bg-gray-800">
-                <Link href="/jobs/new" className="font-bold text-white">
-                  Post a job
-                </Link>
-              </Button>
-            </>
-          )}
-          {(currentUser && currentUser.role === "SEEKER") && (
-            <>
-              {/* <ImageUpload /> Add the ImageUpload component here */}
-              <Button onClick={handleOpenModal} className="bg-green-600 hover:bg-black font-bold text-white">
-                Hire Me
-              </Button>
-            </>
-          )}
-          {(currentUser && currentUser.role === "ADMIN") && (
-            <>
-              {/* <ImageUpload /> Add the ImageUpload component here */}
-              <Button onClick={() => router.push('/dashboard')} className="bg-green-600 hover:bg-black font-bold text-white">
-                Dashboard
-              </Button>
-            </>
-          )}
+
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-2">
+          <NavLinks
+            currentUser={currentUser}
+            onResumeClick={() => setResumeModalOpen(true)}
+            router={router}
+          />
           <UserMenu currentUser={currentUser} />
         </div>
+
+        {/* Mobile hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <UserMenu currentUser={currentUser} />
+          {currentUser && (
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="rounded-lg p-2 hover:bg-gray-100 transition-colors"
+            >
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          )}
+        </div>
       </nav>
-      <ResumeUploadModal isOpen={isUploadModalOpen} onClose={handleCloseUploadModal} />
-      <ResumeUploadModal isOpen={isModalOpen} onClose={handleCloseModal} />
+
+      {/* Mobile dropdown */}
+      {mobileMenuOpen && currentUser && (
+        <div className="border-t bg-white px-4 pb-4 pt-2 md:hidden">
+          <div className="flex flex-col gap-2">
+            <MobileNavLinks
+              currentUser={currentUser}
+              onResumeClick={() => {
+                setResumeModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              router={router}
+              onNavigate={() => setMobileMenuOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      <ResumeUploadModal
+        isOpen={isResumeModalOpen}
+        onClose={() => setResumeModalOpen(false)}
+      />
     </header>
   );
 }
 
+function NavLinks({
+  currentUser,
+  onResumeClick,
+  router,
+}: {
+  currentUser: User;
+  onResumeClick: () => void;
+  router: ReturnType<typeof useRouter>;
+}) {
+  return (
+    <>
+      {!currentUser && (
+        <Button asChild variant="default" className="bg-gray-900 hover:bg-gray-800">
+          <Link href="/auth/login" className="font-semibold text-white">
+            Login
+          </Link>
+        </Button>
+      )}
 
-// import { useState } from "react";
-// import logo from "@/assets/logo.png";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { Button } from "./ui/button";
-// import { User } from "@prisma/client";
-// import { UserMenu } from "./user-menu";
-// import ResumeUploadModal from "@/components/modals/seekerResumeModal";
-// import { useRouter } from "next/navigation";
+      {currentUser && currentUser.role === "EMPLOYER" && (
+        <>
+          <Button asChild className="bg-gray-900 hover:bg-gray-800">
+            <Link href="/jobs/new" className="font-semibold text-white">
+              Post a job
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="border-gray-300 hover:bg-gray-50">
+            <Link href="/my-jobs" className="font-semibold">
+              My Jobs
+            </Link>
+          </Button>
+        </>
+      )}
 
-// interface NavbarProps {
-//   currentUser: User;
-// }
+      {currentUser && currentUser.role === "SEEKER" && (
+        <>
+          <Button
+            onClick={onResumeClick}
+            className="bg-gray-900 hover:bg-gray-800 font-semibold text-white"
+          >
+            Upload Resume
+          </Button>
+          <Button asChild variant="outline" className="border-gray-300 hover:bg-gray-50">
+            <Link href="/my-applications" className="font-semibold">
+              My Applications
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="border-gray-300 hover:bg-gray-50">
+            <Link href="/recommended-jobs" className="font-semibold">
+              Recommended
+            </Link>
+          </Button>
+        </>
+      )}
 
-// export default function Navbar({
-//   currentUser,
-// } : NavbarProps) {
-//   const [isModalOpen, setModalOpen] = useState(false);
+      {currentUser && currentUser.role === "ADMIN" && (
+        <Button
+          onClick={() => router.push("/dashboard")}
+          className="bg-gray-900 hover:bg-gray-800 font-semibold text-white"
+        >
+          Dashboard
+        </Button>
+      )}
+    </>
+  );
+}
 
-//   const handleOpenModal = () => setModalOpen(true);
-//   const handleCloseModal = () => setModalOpen(false);
+function MobileNavLinks({
+  currentUser,
+  onResumeClick,
+  router,
+  onNavigate,
+}: {
+  currentUser: User;
+  onResumeClick: () => void;
+  router: ReturnType<typeof useRouter>;
+  onNavigate: () => void;
+}) {
+  const linkClass =
+    "w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-colors hover:bg-gray-100";
 
-//   const router = useRouter();
+  return (
+    <>
+      {currentUser.role === "EMPLOYER" && (
+        <>
+          <Link href="/jobs/new" className={linkClass} onClick={onNavigate}>
+            Post a job
+          </Link>
+          <Link href="/my-jobs" className={linkClass} onClick={onNavigate}>
+            My Jobs
+          </Link>
+        </>
+      )}
 
-//   return (
-//     <header className="shadow-md">
-//       <nav className="m-auto flex max-w-5xl items-center justify-between px-3 py-5">
-//         <Link href="/" className="flex items-center gap-3">
-//           <Image src={logo} width={40} height={40} alt="Flow Jobs logo" />
-//           <span className="text-xl font-bold tracking-tight">Rozgar Hub</span>
-//         </Link>
-//         <div className="flex gap-2">
-//           {!currentUser && (
-//             <>
-//               <Button asChild className="bg-black hover:bg-gray-800" variant="ghost">
-//                 <Link href="/jobs/new" className="font-bold text-white">
-//                   Login
-//                 </Link>
-//               </Button>
-//             </>
-//           )}
-//           {(currentUser && currentUser.role === "EMPLOYER") && (
-//             <>
-//               <Button asChild className="bg-black hover:bg-gray-800">
-//                 <Link href="/jobs/new" className="font-bold text-white">
-//                   Post a job
-//                 </Link>
-//               </Button>
-//             </>
-//           )}
-//           {(currentUser && currentUser.role === "SEEKER") && (
-//             <>
-//               <Button onClick={handleOpenModal} className="bg-green-600 hover:bg-black font-bold text-white">
-//                 Hire Me
-//               </Button>
-//             </>
-//           )}
-//           <UserMenu currentUser={currentUser} />
-//         </div>
-//       </nav>
-//       <ResumeUploadModal isOpen={isModalOpen} onClose={handleCloseModal} />
-//     </header>
-//   );
-// }
+      {currentUser.role === "SEEKER" && (
+        <>
+          <button onClick={onResumeClick} className={linkClass}>
+            Upload Resume
+          </button>
+          <Link href="/my-applications" className={linkClass} onClick={onNavigate}>
+            My Applications
+          </Link>
+          <Link href="/recommended-jobs" className={linkClass} onClick={onNavigate}>
+            Recommended Jobs
+          </Link>
+        </>
+      )}
 
+      {currentUser.role === "ADMIN" && (
+        <button
+          onClick={() => {
+            router.push("/dashboard");
+            onNavigate();
+          }}
+          className={linkClass}
+        >
+          Dashboard
+        </button>
+      )}
+    </>
+  );
+}
