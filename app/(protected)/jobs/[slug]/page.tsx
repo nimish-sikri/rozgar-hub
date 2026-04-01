@@ -57,7 +57,7 @@ export default async function Page({ params: { slug } }: PageProps) {
     await Promise.all([
       isSeeker ? getExistingApplication(job.id) : null,
       isSeeker ? getUserResume() : null,
-      user ? getSavedJobIds() : [],
+      user ? getSavedJobIds() : ([] as string[]),
       prisma.job.findMany({
         where: {
           approved: true,

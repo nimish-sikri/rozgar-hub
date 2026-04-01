@@ -81,21 +81,21 @@ function extractSkillsFromText(text: string): string[] {
   // Match against dictionary
   const matchedSkills: { skill: string; freq: number }[] = [];
 
-  for (const [term, freq] of wordFreq.entries()) {
+  Array.from(wordFreq.entries()).forEach(([term, freq]) => {
     if (SKILLS_DICTIONARY.has(term)) {
       matchedSkills.push({ skill: term, freq });
     }
-  }
+  });
 
   // Substring matches
-  for (const skill of SKILLS_DICTIONARY) {
+  Array.from(SKILLS_DICTIONARY).forEach((skill) => {
     if (normalizedText.includes(skill) && !matchedSkills.find((m) => m.skill === skill)) {
       matchedSkills.push({ skill, freq: 1 });
     }
-  }
+  });
 
   matchedSkills.sort((a, b) => b.freq - a.freq || a.skill.localeCompare(b.skill));
-  return [...new Set(matchedSkills.map((m) => m.skill))];
+  return Array.from(new Set(matchedSkills.map((m) => m.skill)));
 }
 
 export async function POST(req: Request) {
