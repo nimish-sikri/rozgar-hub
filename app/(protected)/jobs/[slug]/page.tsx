@@ -84,7 +84,7 @@ export default async function Page({ params: { slug } }: PageProps) {
               </div>
             )}
 
-            {isSeeker ? (
+            {isSeeker && (
               <ApplyJobButton
                 jobId={job.id}
                 hasApplied={!!existingApplication}
@@ -92,16 +92,7 @@ export default async function Page({ params: { slug } }: PageProps) {
                 resumeFileName={resume?.fileName}
                 externalLink={applicationLink}
               />
-            ) : applicationLink ? (
-              <Button asChild className="w-full bg-gray-900 hover:bg-gray-800">
-                <a
-                  href={applicationLink}
-                  className="block text-white font-semibold text-center"
-                >
-                  Apply now
-                </a>
-              </Button>
-            ) : null}
+            )}
           </div>
 
           {/* Company info card */}
