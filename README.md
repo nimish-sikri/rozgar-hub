@@ -41,6 +41,22 @@ A full-stack job portal built with Next.js where job seekers can discover opport
 
 ---
 
+## Architecture
+
+### User Flow
+![User Flow](docs/user-flow.png)
+
+### System Architecture
+![System Architecture](docs/architecture.png)
+
+### Tech Stack
+![Tech Stack](docs/tech-stack.png)
+
+### ER Diagram
+![ER Diagram](docs/er-diagram.png)
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -237,16 +253,6 @@ The app is optimized for [Vercel](https://vercel.com):
 4. Vercel auto-detects Next.js and deploys
 
 The `postinstall` script automatically runs `prisma generate` during deployment.
-
----
-
-## Architecture
-
-See [architecture.md](./architecture.md) for detailed Mermaid diagrams covering:
-- System architecture
-- User flow (Seeker, Employer, Admin)
-- Entity-relationship diagram
-- Tech stack overview
 
 ---
 
