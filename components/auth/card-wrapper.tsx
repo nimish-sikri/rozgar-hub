@@ -29,7 +29,7 @@ export const CardWrapper = ({
 }: CardWrapperProps) => {
   return (
     <Card
-      className={`w-full border-gray-200 bg-white shadow-sm rounded-2xl ${className || ""}`}
+      className={`w-full max-w-[400px] mx-auto border-gray-200 bg-white shadow-sm rounded-2xl ${className || ""}`}
     >
       <CardHeader className="pb-4">
         <Header label={headerLabel} />

@@ -4,8 +4,8 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex">
       {/* Left panel - branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,#1a1a2e_0%,#16213e_50%,#0f3460_100%)]" />
+      <div className="hidden lg:flex lg:w-[45%] bg-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gray-900" />
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
@@ -49,8 +49,8 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Decorative circles */}
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/5" />
-        <div className="absolute -bottom-32 -left-16 h-80 w-80 rounded-full bg-white/5" />
+        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-gray-800" />
+        <div className="absolute -bottom-32 -left-16 h-80 w-80 rounded-full bg-gray-800" />
       </div>
 
       {/* Right panel - form */}
