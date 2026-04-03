@@ -181,7 +181,7 @@ export const LoginForm = () => {
                     <FormSuccess message={success}/>
                     <Button
                         disabled={isPending} 
-                        className="w-full bg-green-500 text-white font-bold hover:bg-black "
+                        className="w-full bg-gray-900 text-white font-bold hover:bg-gray-800"
                         type="submit"
                     >
                         {showTwoFactor ? "Confirm" : "Login"}

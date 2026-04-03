@@ -47,37 +47,37 @@ export default async function Home({ searchParams }: { searchParams: PageProps['
   const currentPage = parseInt(page ?? "1", 10);
   const isRemote = remote === "true";
 
-  const [locations, savedJobIds, stats] = await Promise.all([
+  const showHero = !title && !type && !location && !remote && currentPage === 1;
+
+  const [locations, savedJobIds, { jobs, totalPages }, stats] = await Promise.all([
     getAllJobLocations(),
     getSavedJobIds(),
-    prisma.job.aggregate({
-      where: { approved: true },
-      _count: true,
-    }).then(async (result) => {
-      const companies = await prisma.job.findMany({
-        where: { approved: true },
-        select: { companyName: true },
-        distinct: ["companyName"],
-      });
-      const locationCount = await prisma.job.findMany({
-        where: { approved: true, location: { not: null } },
-        select: { location: true },
-        distinct: ["location"],
-      });
-      return {
-        totalJobs: result._count,
-        totalCompanies: companies.length,
-        totalLocations: locationCount.length,
-      };
-    }),
+    getJobs(
+      { title, type, location, remote: isRemote, salary },
+      currentPage
+    ),
+    showHero
+      ? Promise.all([
+          prisma.job.count({ where: { approved: true } }),
+          prisma.job.findMany({
+            where: { approved: true },
+            select: { companyName: true },
+            distinct: ["companyName"],
+          }),
+          prisma.job.findMany({
+            where: { approved: true, location: { not: null } },
+            select: { location: true },
+            distinct: ["location"],
+          }),
+        ]).then(([totalJobs, companies, locs]) => ({
+          totalJobs,
+          totalCompanies: companies.length,
+          totalLocations: locs.length,
+        }))
+      : Promise.resolve({ totalJobs: 0, totalCompanies: 0, totalLocations: 0 }),
   ]);
 
   const metadata = generateMetadata({ searchParams });
-
-  const { jobs, totalPages } = await getJobs(
-    { title, type, location, remote: isRemote, salary },
-    currentPage
-  );
 
   const hasFilters = title || type || location || isRemote || salary;
 
