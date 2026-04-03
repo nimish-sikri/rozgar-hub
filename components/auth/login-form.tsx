@@ -3,6 +3,7 @@
 import { CardWrapper } from "@/components/auth/card-wrapper"
 import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -36,6 +37,7 @@ export const LoginForm = () => {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
+    const [showPassword, setShowPassword] = useState(false);
     const searchParams = useSearchParams();
     const router = useRouter();
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked"
@@ -152,13 +154,23 @@ export const LoginForm = () => {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input 
-                                                className=" focus:outline-none focus:ring-black"
-                                                    disabled={isPending}
-                                                    {...field}
-                                                    placeholder="********"
-                                                    type="password"
-                                                />
+                                                <div className="relative">
+                                                    <Input
+                                                    className=" focus:outline-none focus:ring-black pr-10"
+                                                        disabled={isPending}
+                                                        {...field}
+                                                        placeholder="********"
+                                                        type={showPassword ? "text" : "password"}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                    </button>
+                                                </div>
                                             </FormControl>
                                             <Button
                                                 size={"sm"}

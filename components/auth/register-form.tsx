@@ -3,6 +3,7 @@
 import { CardWrapper } from "@/components/auth/card-wrapper"
 import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
     Form,
@@ -35,6 +36,7 @@ export const RegisterForm = () => {
     const [success, setSuccess] = useState<string | undefined>("");
     const router = useRouter();
     const [userRole, setUserRole] = useState<string | undefined>("SEEKER");
+    const [showPassword, setShowPassword] = useState(false);
 
     let roleLabel = 'Job Seeker'
 
@@ -166,13 +168,23 @@ export const RegisterForm = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input 
-                                        className=" focus:ring-black"
-                                            disabled={isPending}
-                                            {...field}
-                                            placeholder="Password"
-                                            type="password"
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                            className=" focus:ring-black pr-10"
+                                                disabled={isPending}
+                                                {...field}
+                                                placeholder="Password"
+                                                type={showPassword ? "text" : "password"}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                tabIndex={-1}
+                                            >
+                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
